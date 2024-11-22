@@ -39,13 +39,6 @@ infrastructure in Google Cloud.
 
 > __Note:__ The deployment of cloud resources can take between 5 - 10 minutes.
 
-> __Note:__ If you get the error: `Permission denied while using the Eventarc Service` you will need to run these Terraform commands to fix the error:
-
-```bash
-terraform plan -out=out.tfplan
-terraform apply "out.tfplan"
-```
-
 ## Tearing Down Infrastructure
 
 1. Tear down all infrastructure created using Terraform:
