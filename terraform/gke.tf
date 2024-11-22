@@ -10,7 +10,7 @@ provider "kubernetes" {
 module "gke" {
   deletion_protection        = false
   source                     = "terraform-google-modules/kubernetes-engine/google//modules/beta-autopilot-private-cluster"
-  version                    = "32.0.0"
+
   project_id                 = local.project.id
   name                       = "gke-${var.customer_id}"
   region                     = var.region
@@ -21,6 +21,7 @@ module "gke" {
   horizontal_pod_autoscaling = true
   release_channel            = "RAPID" # RAPID was chosen for L4 support.
   kubernetes_version         = "1.29"  # We need the tip of 1.28 or 1.29 (not just default)
+  create_service_account     = false
   service_account            = module.sa_gke_cluster.email
   # Google Cloud Storage (GCS) Fuse
   gcs_fuse_csi_driver        = false
@@ -37,9 +38,9 @@ module "gke" {
   maintenance_end_time   = "2023-01-02T19:00:00Z"
 
   depends_on = [
-    google_service_account.sa_gke_cluster,
     module.vpc,
-    module.cloud-nat
+    module.cloud-nat,
+    module.sa_gke_cluster,
   ]
 }
 
