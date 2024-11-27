@@ -1,0 +1,7 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+requires:
+- configs: ["frontend-cfg"]
+  path: frontend/skaffold.yaml
+- configs: ["backend-cfg"]
+  path: backend/skaffold.yaml

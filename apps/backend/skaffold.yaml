@@ -1,0 +1,53 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: backend-cfg
+
+build:
+  tagPolicy:
+    gitCommit: {}
+  artifacts:
+  - image: backend
+    context: .
+    docker:
+      dockerfile: Dockerfile
+      noCache: false
+
+manifests:
+  helm:
+    releases:
+    - name: backend
+      chartPath: ./manifests/chart
+      setValueTemplates:
+        image.repository: "{{.IMAGE_REPO_backend}}"
+        image.tag: "{{.IMAGE_TAG_backend}}"
+      setValues:
+        replicaCount: 2
+        image.pullPolicy: "IfNotPresent"
+        service:
+          port: 8080
+        extraEnvs:
+        - name: lang
+          value: python
+        resources:
+          requests:
+            cpu: 2
+            memory: 4Gi
+          limits:
+            memory: 4Gi
+
+verify:
+- name: wget
+  container:
+    name: wget
+    image: busybox
+    command: ['wget']
+    args: ['backend.default.svc.cluster.local:8080/_healthz']
+  executionMode:
+    kubernetesCluster: {}
+
+deploy:
+  kubectl:
+    flags:
+      global:
+      - --namespace=backend
